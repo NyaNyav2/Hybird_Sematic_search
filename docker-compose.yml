@@ -1,0 +1,28 @@
+services:
+  tool-search-hybrid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tool-search-hybrid
+    ports:
+      - "5031:5031"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - search-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5031/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  search-network:
+    driver: bridge
